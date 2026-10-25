@@ -1,0 +1,5 @@
+(library
+ (name privatus_analytics_tyxml)
+ (public_name privatus-analytics.tyxml)
+ (optional)
+ (libraries privatus-analytics tyxml))

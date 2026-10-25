@@ -1,0 +1,5 @@
+(test
+ (name test_tyxml)
+ (package privatus-analytics)
+ (enabled_if %{lib-available:tyxml})
+ (libraries privatus-analytics privatus-analytics.tyxml tyxml alcotest))

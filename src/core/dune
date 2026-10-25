@@ -1,0 +1,3 @@
+(library
+ (name privatus_analytics)
+ (public_name privatus-analytics))

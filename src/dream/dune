@@ -1,0 +1,4 @@
+(library
+ (name privatus_analytics_dream)
+ (public_name privatus-analytics-dream)
+ (libraries privatus-analytics dream lwt))

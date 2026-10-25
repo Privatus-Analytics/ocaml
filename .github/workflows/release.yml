@@ -1,0 +1,42 @@
+name: Release
+
+# Runs on a version tag such as v1.0.0. It tests the code, builds the source
+# archive with dune-release and attaches it to a GitHub release. It uses only
+# the short-lived GITHUB_TOKEN. The opam-repository pull request is opened by
+# hand (see SUBMISSION.md), because opam-repository has no trusted publishing.
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    environment: release
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: "5.2"
+      - run: opam install . --deps-only --with-test
+      - run: opam install tyxml dune-release
+      - run: opam exec -- dune runtest
+      - name: Build the source archive
+        run: opam exec -- dune-release distrib --skip-lint
+      - name: Make the opam files with the archive address and checksum
+        run: opam exec -- dune-release opam pkg
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          gh release create "$GITHUB_REF_NAME" \
+            "_build/privatus-analytics-${VERSION}.tbz" \
+            --title "$GITHUB_REF_NAME" --notes-file CHANGELOG.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: opam-files
+          path: _build/privatus-analytics*/opam

@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        ocaml-compiler: ["4.14", "5.1", "5.2", "5.3", "5.4"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
+      - run: opam install . --deps-only --with-test
+      - run: opam install tyxml
+      - run: opam exec -- dune build -p privatus-analytics,privatus-analytics-dream @install
+      - run: opam exec -- dune runtest
+
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: "5.2"
+      - run: opam install . --deps-only --with-test --with-doc
+      - run: opam install tyxml ocamlformat.0.29.0
+      - name: Formatting
+        run: opam exec -- dune build @fmt
+      - name: Docs
+        run: opam exec -- dune build @doc
+      - name: opam lint
+        run: opam lint privatus-analytics.opam privatus-analytics-dream.opam
+      - name: opam files match dune-project
+        run: |
+          opam exec -- dune build privatus-analytics.opam privatus-analytics-dream.opam
+          git diff --exit-code -- '*.opam'

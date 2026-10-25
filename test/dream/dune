@@ -1,0 +1,16 @@
+(test
+ (name test_dream)
+ (package privatus-analytics-dream)
+ (libraries
+  privatus-analytics
+  privatus-analytics-dream
+  dream
+  lwt
+  alcotest
+  unix))
+
+(rule
+ (targets pages.ml)
+ (deps pages.eml.ml)
+ (action
+  (run %{bin:dream_eml} %{deps} --workspace %{workspace_root})))
