@@ -1,0 +1,9 @@
+(executable
+ (name app)
+ (libraries privatus-analytics privatus-analytics-dream dream lwt))
+
+(rule
+ (targets pages.ml)
+ (deps pages.eml.ml)
+ (action
+  (run %{bin:dream_eml} %{deps} --workspace %{workspace_root})))

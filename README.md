@@ -98,7 +98,8 @@ With TyXML, `Privatus_analytics_tyxml.tag ~config ()` gives an element for
 `Tyxml.Html.head`.
 
 The tag prints nothing when there is no site id, and nothing outside
-production (see below). If your app uses a Content Security Policy nonce, pass
+production (see below). The one exception is the queue stub: when it is on,
+it still prints (see [Track from your own JavaScript](#track-from-your-own-javascript)). If your app uses a Content Security Policy nonce, pass
 it with `~nonce`, or give the middleware a function:
 `Privatus_analytics_dream.middleware ~config ~nonce:(fun request -> ...)`.
 
@@ -153,7 +154,7 @@ let config =
 | `auto_inject` | `false` | Lets the Dream middleware add the tag |
 | `extra_attributes` | `[]` | Any other `data-*` attribute |
 | `props` | `[]` | Page props sent with every pageview and event. See below |
-| `queue_stub` | `false` | Prints a small script first, so `privatus.track` calls made before the tracker loads are kept and sent later |
+| `queue_stub` | `false` | Prints a small script first, so `privatus.track` calls made before the tracker loads are kept and sent later. It still prints when the tag is off, so those calls never fail |
 
 Each tracker attribute is explained in the [script attributes
 reference](https://privatusanalytics.com/docs/tracker/attributes), and the
@@ -325,8 +326,10 @@ let config = Privatus_analytics.Config.make ~site_id:"pa_YOURSITEID" ~queue_stub
 ```
 
 or for one page: `<%s! Privatus_analytics_dream.tag request ~queue_stub:true %>`.
-Like the tag, the stub prints only where the tag is on, so in development use
-`window.privatus && privatus.track(...)`.
+The stub prints even where the tag is off (in development, with
+`~enabled:false`, or with no site id). Then only the stub prints: no tracker
+and no page props. So you can always call `privatus.track(...)`. In
+development the calls just wait in the queue and are never sent.
 
 ### See the results
 
@@ -347,6 +350,15 @@ packages make no web requests and never read IP addresses or browser details.
 Keep people out of your props and event props: no names, emails or user ids.
 See the [privacy documentation](https://privatusanalytics.com/docs/privacy)
 for what is collected.
+
+If you have a privacy policy, it should say which tools handle your visitors' data. You can paste this:
+
+> This website uses [Privatus Analytics](https://privatusanalytics.com/privacy-analytics) to count visits. It
+> does not use cookies and does not follow you from one website to another. Your IP address is used for a moment
+> to count visits and is never stored.
+
+Change it to fit your site. The [privacy policy generator](https://privatusanalytics.com/tools/privacy-policy-generator)
+makes a longer version with your site's name in it.
 
 ## Development
 

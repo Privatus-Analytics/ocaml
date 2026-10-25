@@ -78,7 +78,8 @@ module Config : sig
     props : props;  (** Page props sent with every pageview and event. *)
     queue_stub : bool;
         (** [true] prints the tracker's queue stub first, so [privatus.track]
-            calls made before [pa.js] loads are kept. *)
+            calls made before [pa.js] loads are kept. It also prints when the
+            tag is off (then nothing else prints), so those calls never fail. *)
   }
 
   val default : t
@@ -133,9 +134,9 @@ val tag :
   ?nonce:string ->
   unit ->
   string
-(** The HTML for the head of your page, or [""] when there is no site id or the
-    tag is off. Every optional argument overrides the matching setting in
-    [config] for this call.
+(** The HTML for the head of your page. When there is no site id or the tag is
+    off, it is only the queue stub (when [queue_stub] is on) or [""]. Every
+    optional argument overrides the matching setting in [config] for this call.
 
     [props] are merged over the configured props, and a [`Null] value removes
     one. [props_fn] is for framework helpers: its props sit between the

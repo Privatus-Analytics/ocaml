@@ -65,7 +65,8 @@ val tag :
     {!middleware}. Without the middleware it uses
     {!Privatus_analytics.Config.default}. Each optional argument overrides one
     setting for this call. [props] are merged over the configured props, and
-    [`Null] removes one. Gives [""] without a site id or when the tag is off. *)
+    [`Null] removes one. Without a site id or when the tag is off, it gives only
+    the queue stub (when [queue_stub] is on) or [""]. *)
 
 val event_attrs : ?props:Privatus_analytics.props -> string -> string
 (** Same as {!Privatus_analytics.event_attrs}. *)

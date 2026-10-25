@@ -375,7 +375,10 @@ let attributes ?nonce (config : Config.t) =
   match nonce with Some n when n <> "" -> set "nonce" n attrs | _ -> attrs
 
 let render ?nonce ?props_fn ?(props = []) (config : Config.t) =
-  if not (Config.renders config) then ""
+  (* When the tag is off, only the queue stub prints (when it is on), so
+     privatus.track calls never fail. props_fn is not called. *)
+  if not (Config.renders config) then
+    if config.queue_stub then queue_stub_script ?nonce () else ""
   else
     let base = keyed config.props in
     let base =

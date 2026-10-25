@@ -1,0 +1,7 @@
+.git
+.github
+_build
+_opam
+example/_build
+*.install
+SUBMISSION.md

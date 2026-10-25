@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Changed: with `queue_stub` on, a tag that is off (outside production, `~enabled:false` or no site id) now
+  prints the queue stub and nothing else, so `privatus.track(...)` calls in your own JavaScript never fail.
+  Before, it printed nothing. With the stub off it still prints nothing. `props_fn` and the middleware's props
+  function still do not run when the tag is off.
+- Added `example/`, a small Dream app for the conformance tests.
+- README: a privacy policy paragraph you can paste.
+
 ## 1.0.0 (2026-10-25)
 
 - Initial release of `privatus-analytics` and `privatus-analytics-dream`.

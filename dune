@@ -1,0 +1,4 @@
+; The conformance example app in example/ is its own dune project (see
+; example/Dockerfile), so the package build leaves it out.
+
+(dirs :standard \ example)

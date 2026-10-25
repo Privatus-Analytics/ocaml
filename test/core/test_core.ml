@@ -191,6 +191,43 @@ let stub_per_call () =
   has "on" (P.tag ~config:on ~queue_stub:true ()) "q:[]";
   lacks "off" (P.tag ~config:on ()) "q:[]"
 
+let stub_only nonce =
+  {|<script nonce="|} ^ nonce ^ {|">|} ^ P.queue_stub ^ "</script>"
+
+let boom () = failwith "should not run"
+
+let off_with_stub () =
+  str "only the stub, with the nonce" (stub_only "abc")
+    (P.tag
+       ~config:{ on with props = [ ("role", `String "admin") ] }
+       ~enabled:false ~queue_stub:true ~nonce:"abc"
+       ~props:[ ("plan", `String "pro") ]
+       ~props_fn:boom ());
+  str "no nonce"
+    ("<script>" ^ P.queue_stub ^ "</script>")
+    (P.tag ~config:on ~enabled:false ~queue_stub:true ())
+
+let off_without_stub () =
+  str "nothing" ""
+    (P.tag ~config:on ~enabled:false ~nonce:"abc"
+       ~props:[ ("plan", `String "pro") ]
+       ())
+
+let no_site_id_with_stub () =
+  with_env "PRIVATUS_SITE_ID" "" (fun () ->
+      str "only the stub" (stub_only "abc")
+        (P.tag
+           ~config:(P.Config.make ~enabled:true ~queue_stub:true ())
+           ~nonce:"abc"
+           ~props:[ ("plan", `String "pro") ]
+           ~props_fn:boom ()))
+
+let default_off_with_stub () =
+  with_env "PRIVATUS_ENV" "development" (fun () ->
+      str "only the stub"
+        ("<script>" ^ P.queue_stub ^ "</script>")
+        (P.tag ~config:(P.Config.make ~site_id:site ~queue_stub:true ()) ()))
+
 (* Page props JSON *)
 
 let json = Alcotest.(check (option string))
@@ -410,6 +447,11 @@ let () =
           t "queue stub prints first" queue_stub_first;
           t "the queue stub is the official one" official_stub;
           t "queue stub per call" stub_per_call;
+          t "off with the stub on prints only the stub" off_with_stub;
+          t "off with the stub off prints nothing" off_without_stub;
+          t "no site id with the stub on prints only the stub"
+            no_site_id_with_stub;
+          t "outside production the stub still prints" default_off_with_stub;
         ] );
       ( "page props",
         [
