@@ -1,22 +1,47 @@
 # Privatus Analytics for OCaml
 
-Adds the cookieless [Privatus Analytics](https://privatusanalytics.com)
-tracking script to your OCaml web app. There are two opam packages:
+**Simple, private website analytics for your OCaml web app. No cookies, honest numbers,
+and a dashboard you understand in seconds.**
 
-* `privatus-analytics` builds the script tag and the HTML attributes. It
-  needs nothing but OCaml. If you have TyXML, it also gives you
+## Why Privatus Analytics
+
+**Google Analytics is slow, confusing and hungry for data.** It sends what your
+visitors do to Google. In many countries it means showing a cookie pop-up (the box
+that asks visitors to accept cookies), and many people click "reject", so you never
+see them. Bots pad the numbers that are left.
+
+**Privatus Analytics fixes that.** It counts visits to your OCaml web app without cookies and
+never stores IP addresses. Bots are filtered out before they are counted. Your
+data is never sold or shared.
+
+What you get:
+
+- **A dashboard you understand in seconds.** Visitors, top pages and where people
+  came from, all on one screen.
+- **No cookie pop-up needed for our analytics.** We set no cookies and store no
+  personal data. Laws differ by country, so check your own legal advice.
+- **Honest numbers.** Known bots and fake traffic are left out on every plan.
+- **A fast site.** The tracking script is about 3 KB, tiny next to most tracking tags.
+- **Data you own.** We never sell it or show you ads, and you can pull it out
+  any time through the API.
+
+**Start free.** The Free plan has 10,000 events a month and 3 sites, with no card.
+Every new account also gets 14 days of Pro free, with no card.
+[Create your account](https://privatusanalytics.com).
+
+## What this package does
+
+- `privatus-analytics` builds the script tag and the HTML attributes. It needs
+  nothing but OCaml. If you have TyXML, it also gives you
   `privatus-analytics.tyxml`.
-* `privatus-analytics-dream` is for [Dream](https://aantron.github.io/dream/).
-  It has a middleware that can put the tag in the `<head>` for you, and
-  helpers for `.eml` templates.
+- `privatus-analytics-dream` is for [Dream](https://aantron.github.io/dream/).
+  It has a middleware that can put the tag in the `<head>` for you, and helpers
+  for `.eml` templates.
+- The packages only print the browser script. They never send events from your
+  server and set no cookies.
 
-Privatus Analytics counts visits, sources, pages and conversions without
-cookies, local storage or fingerprinting, so analytics does not need a consent
-banner by itself. Check with your own counsel for your country.
-
-The packages only print the browser script. They never send events from your
-server and set no cookies. You need a Privatus Analytics account to see
-reports, and there is a free plan. Sign up at https://privatusanalytics.com.
+You need a Privatus Analytics account to see your reports, and there is a
+free plan. [Sign up at privatusanalytics.com](https://privatusanalytics.com).
 
 ## Requirements
 
@@ -113,7 +138,7 @@ let config = Privatus_analytics.Config.make ~site_id:"pa_YOURSITEID" ~auto_injec
 
 The middleware then adds the tag just before `</head>` in uncompressed
 `text/html` responses with status 200. It skips Ajax requests, pages without
-a `<head>`, and pages that already have the tag. Responses that carry a
+a `<head>`, and pages that already have the tag. Responses that have a
 `Content-Encoding` header are left alone, so if you compress pages in your
 app, use the helper instead. When the response has a `Content-Length` header,
 the middleware updates it.
@@ -190,7 +215,7 @@ out signed-in staff, print the tag only for other people:
 
 ## Product analytics: see which features people use
 
-Privatus can show which buttons, forms and features people really use. You
+Privatus Analytics can show which buttons, forms and features people really use. You
 add a few attributes to your HTML. The tracker reads them in the browser and
 sends the events. Your server still sends nothing.
 
@@ -304,7 +329,7 @@ are safe inside a script. The middleware uses the same function when
 `auto_inject` is on.
 
 **Never put names, emails, user ids or anything that points to one person in
-props.** Privatus counts visitors without any id. Put groups (like the plan or
+props.** Privatus Analytics counts visitors without any id. Put groups (like the plan or
 the role), not people. The server also removes emails and long ids it finds.
 
 ### Track from your own JavaScript
